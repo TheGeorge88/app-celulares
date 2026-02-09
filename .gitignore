@@ -22,3 +22,8 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+nul
+auto-imports.d.ts
+components.d.ts
+.claude/
+bootstrap/cache/*.php

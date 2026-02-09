@@ -1,4 +1,4 @@
-<script setup lang="ts">
+pp<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { router } from '@inertiajs/vue3'
 import type { NavigationMenuItem } from '@nuxt/ui'
@@ -57,6 +57,18 @@ const links = [[
     icon: 'i-lucide-package',
     to: '/repuestos',
     onSelect: () => navigateTo('/repuestos')
+  },
+  {
+    label: 'Categorias',
+    icon: 'i-lucide-tags',
+    to: '/categorias',
+    onSelect: () => navigateTo('/categorias')
+  },
+  {
+    label: 'Productos',
+    icon: 'i-lucide-box',
+    to: '/productos',
+    onSelect: () => navigateTo('/productos')
   },
   {
     label: 'Facturas',
