@@ -12,19 +12,20 @@ class ClienteController extends Controller
 {
     public function index()
     {
-        $clientes = ClienteEloquentModel::all();
+        $clientes = ClienteEloquentModel::with('user')->get();
         return ClienteResource::collection($clientes);
     }
 
     public function store(StoreClienteRequest $request)
     {
         $cliente = ClienteEloquentModel::create($request->validated());
+        $cliente->load('user');
         return new ClienteResource($cliente);
     }
 
     public function show(string $id)
     {
-        $cliente = ClienteEloquentModel::find($id);
+        $cliente = ClienteEloquentModel::with('user')->find($id);
 
         if (!$cliente) {
             return response()->json([
@@ -48,6 +49,7 @@ class ClienteController extends Controller
         }
 
         $cliente->update($request->validated());
+        $cliente->load('user');
         return new ClienteResource($cliente);
     }
 

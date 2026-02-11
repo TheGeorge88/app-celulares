@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { reactive, ref, computed } from 'vue'
+import { router, usePage } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
-import { z } from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
+import FormField from '../../components/FormField.vue'
 
 interface Cliente { id: string; razonSocial: string; numeroDocumento: string }
 interface Equipo {
@@ -12,61 +11,44 @@ interface Equipo {
 }
 
 const props = defineProps<{
-  equipo: { data: Equipo }
+  equipo: Equipo
   clientes: { data: Cliente[] }
 }>()
 
-const toast = useToast()
-
-const schema = z.object({
-  clienteId: z.string().min(1, 'Seleccione un cliente'),
-  marca: z.string().min(1, 'La marca es obligatoria'),
-  modelo: z.string().min(1, 'El modelo es obligatorio'),
-  imei: z.string().min(1, 'El IMEI es obligatorio'),
-  color: z.string().min(1, 'El color es obligatorio'),
-  observaciones: z.string().optional()
+const state = reactive({
+  clienteId: props.equipo.clienteId,
+  marca: props.equipo.marca,
+  modelo: props.equipo.modelo,
+  imei: props.equipo.imei,
+  color: props.equipo.color,
+  observaciones: props.equipo.observaciones || ''
 })
 
-type Schema = z.output<typeof schema>
+const page = usePage()
+const backendErrors = computed(() => page.props.errors || {})
 
-const state = ref<Partial<Schema>>({
-  clienteId: props.equipo.data.clienteId,
-  marca: props.equipo.data.marca,
-  modelo: props.equipo.data.modelo,
-  imei: props.equipo.data.imei,
-  color: props.equipo.data.color,
-  observaciones: props.equipo.data.observaciones || ''
+const errors = computed(() => {
+  const result: Record<string, string> = {}
+  Object.keys(backendErrors.value).forEach(key => {
+    const error = backendErrors.value[key]
+    result[key] = Array.isArray(error) ? error[0] : error
+  })
+  return result
 })
 
-const loading = ref(false)
+const isLoading = ref(false)
+
 const clienteOptions = computed(() =>
   props.clientes.data.map(c => ({ label: `${c.razonSocial} - ${c.numeroDocumento}`, value: c.id }))
 )
 
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  loading.value = true
-  try {
-    const response = await fetch(route('api.equipos.update', props.equipo.data.id), {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '')
-      },
-      credentials: 'include',
-      body: JSON.stringify(event.data)
-    })
+const handleSubmit = () => {
+  isLoading.value = true
 
-    if (response.ok) {
-      toast.add({ title: 'Equipo actualizado', color: 'success' })
-      router.visit(route('equipos.index'))
-    } else {
-      const error = await response.json()
-      toast.add({ title: 'Error', description: error.message, color: 'error' })
-    }
-  } finally {
-    loading.value = false
-  }
+  router.put(route('equipos.update', props.equipo.id), state, {
+    onFinish: () => { isLoading.value = false },
+    onError: () => { isLoading.value = false }
+  })
 }
 
 const goBack = () => router.visit(route('equipos.index'))
@@ -83,35 +65,47 @@ const goBack = () => router.visit(route('equipos.index'))
     </template>
 
     <template #body>
-      <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
-        <UFormField label="Cliente" name="clienteId">
-          <USelectMenu v-model="state.clienteId" :items="clienteOptions" />
-        </UFormField>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UFormField label="Marca" name="marca">
-            <UInput v-model="state.marca" />
-          </UFormField>
-          <UFormField label="Modelo" name="modelo">
-            <UInput v-model="state.modelo" />
-          </UFormField>
-          <UFormField label="IMEI" name="imei">
-            <UInput v-model="state.imei" />
-          </UFormField>
-          <UFormField label="Color" name="color">
-            <UInput v-model="state.color" />
-          </UFormField>
+      <div class="p-6">
+        <div class="mb-6">
+          <h2 class="text-2xl font-semibold">Editar Equipo</h2>
+          <p class="text-sm text-muted mt-1">Modifique los datos del equipo</p>
         </div>
 
-        <UFormField label="Observaciones" name="observaciones">
-          <UTextarea v-model="state.observaciones" />
-        </UFormField>
+        <form @submit.prevent="handleSubmit" class="space-y-6 max-w-2xl">
+          <FormField label="Cliente" name="clienteId" required :error="errors.cliente_id">
+            <USelectMenu v-model="state.clienteId" :items="clienteOptions" placeholder="Seleccione un cliente" size="xl" class="w-full" />
+          </FormField>
 
-        <div class="flex gap-3">
-          <UButton type="submit" label="Actualizar" color="primary" :loading="loading" />
-          <UButton label="Cancelar" color="neutral" variant="subtle" @click="goBack" />
-        </div>
-      </UForm>
+          <div class="grid grid-cols-2 gap-8">
+            <FormField label="Marca" name="marca" required :error="errors.marca">
+              <UInput v-model="state.marca" icon="i-lucide-smartphone" size="xl" class="w-full" />
+            </FormField>
+
+            <FormField label="Modelo" name="modelo" required :error="errors.modelo">
+              <UInput v-model="state.modelo" size="xl" class="w-full" />
+            </FormField>
+          </div>
+
+          <div class="grid grid-cols-2 gap-8">
+            <FormField label="IMEI" name="imei" required :error="errors.imei">
+              <UInput v-model="state.imei" icon="i-lucide-barcode" size="xl" class="w-full" />
+            </FormField>
+
+            <FormField label="Color" name="color" required :error="errors.color">
+              <UInput v-model="state.color" icon="i-lucide-palette" size="xl" class="w-full" />
+            </FormField>
+          </div>
+
+          <FormField label="Observaciones" name="observaciones" :error="errors.observaciones">
+            <UTextarea v-model="state.observaciones" size="xl" class="w-full" />
+          </FormField>
+
+          <div class="flex justify-end gap-3 pt-4">
+            <UButton type="button" color="neutral" variant="outline" label="Cancelar" @click="goBack" :disabled="isLoading" />
+            <UButton type="submit" color="primary" label="Actualizar Equipo" icon="i-lucide-save" :loading="isLoading" />
+          </div>
+        </form>
+      </div>
     </template>
   </UDashboardPanel>
 </template>

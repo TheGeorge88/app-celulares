@@ -3,8 +3,9 @@
 namespace Src\Cliente\Application\Controllers;
 
 use App\Http\Controllers\Controller;
+use Src\Auth\Infrastructure\Models\UserEloquentModel;
 use Src\Cliente\Infrastructure\Models\ClienteEloquentModel;
-use Src\Cliente\Infrastructure\Mappers\ClienteMapper;
+use Src\Cliente\Infrastructure\Resources\ClienteResource;
 use Src\Cliente\Infrastructure\Requests\StoreClienteRequest;
 use Src\Cliente\Infrastructure\Requests\UpdateClienteRequest;
 use Inertia\Inertia;
@@ -16,43 +17,43 @@ class ClienteWebController extends Controller
 {
     public function index(): Response
     {
-        $clientes = ClienteEloquentModel::all();
-
-        $clientesData = $clientes->map(
-            fn($model) => ClienteMapper::toDomain($model)->toArray()
-        )->toArray();
+        $clientes = ClienteEloquentModel::with('user')->orderBy('created_at', 'desc')->get();
 
         return Inertia::render('Cliente/index', [
             'customers' => [
-                'data' => $clientesData,
+                'data' => ClienteResource::collection($clientes),
                 'links' => [],
                 'meta' => [
-                    'total' => count($clientesData),
-                    'per_page' => count($clientesData),
+                    'total' => $clientes->count(),
+                    'per_page' => $clientes->count(),
                     'current_page' => 1,
                 ]
             ],
             'stats' => [
-                'total' => count($clientesData),
-                'active' => count($clientesData),
+                'total' => $clientes->count(),
+                'active' => $clientes->count(),
                 'inactive' => 0,
             ],
         ]);
     }
 
-    /**
-     * Mostrar formulario de creación
-     */
     public function create(): Response
     {
-        return Inertia::render('Cliente/create');
+        $usuariosAsignados = ClienteEloquentModel::pluck('user_id')->toArray();
+        $usuarios = UserEloquentModel::whereNotIn('id', $usuariosAsignados)
+            ->orderBy('name')
+            ->get(['id', 'name', 'email']);
+
+        return Inertia::render('Cliente/create', [
+            'usuarios' => $usuarios,
+        ]);
     }
 
     public function store(StoreClienteRequest $request): RedirectResponse
     {
         try {
             ClienteEloquentModel::create($request->validated());
-            
+
             return redirect()
                 ->route('clientes.index')
                 ->with('success', 'Cliente creado exitosamente');
@@ -66,10 +67,18 @@ class ClienteWebController extends Controller
 
     public function edit(string $id): Response
     {
-        $cliente = ClienteEloquentModel::findOrFail($id);
+        $cliente = ClienteEloquentModel::with('user')->findOrFail($id);
+
+        $usuariosAsignados = ClienteEloquentModel::where('id', '!=', $id)
+            ->pluck('user_id')
+            ->toArray();
+        $usuarios = UserEloquentModel::whereNotIn('id', $usuariosAsignados)
+            ->orderBy('name')
+            ->get(['id', 'name', 'email']);
 
         return Inertia::render('Cliente/edit', [
-            'cliente' => ClienteMapper::toDomain($cliente)->toArray()
+            'cliente' => new ClienteResource($cliente),
+            'usuarios' => $usuarios,
         ]);
     }
 
@@ -100,7 +109,6 @@ class ClienteWebController extends Controller
                 ->with('error', 'Cliente no encontrado');
         }
 
-        // Verificar si tiene facturas asociadas usando la relación Eloquent
         if ($cliente->facturas()->exists()) {
             return redirect()
                 ->back()

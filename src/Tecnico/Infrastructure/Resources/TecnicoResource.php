@@ -13,13 +13,12 @@ class TecnicoResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'cedula' => $this->cedula,
-            'nombre' => $this->nombre,
-            'apellido' => $this->apellido,
-            'nombreCompleto' => $this->nombre . ' ' . $this->apellido,
-            'telefono' => $this->telefono,
-            'email' => $this->email,
+            'userId' => $this->user_id,
+            'usuario' => $this->user?->name,
+            'email' => $this->user?->email,
             'especialidad' => $this->especialidad,
+            'certificacion' => $this->certificacion,
+            'fechaContratacion' => $this->fecha_contratacion?->format('Y-m-d'),
             'activo' => $this->activo,
             'createdAt' => $this->created_at?->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updated_at?->format('Y-m-d H:i:s'),

@@ -1,30 +1,25 @@
 <script setup lang="ts">
-import { ref, computed, h, resolveComponent } from 'vue'
+import { ref, h, resolveComponent } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
 import type { TableColumn } from '@nuxt/ui'
-import { upperFirst } from 'scule'
 import { getPaginationRowModel, getFilteredRowModel } from '@tanstack/table-core'
 import type { Row } from '@tanstack/table-core'
 
 interface Tecnico {
   id: string
-  cedula: string
-  nombre: string
-  apellido: string
-  nombreCompleto: string
-  telefono: string
+  userId: string
+  usuario: string
   email: string
   especialidad: string
+  certificacion: string | null
+  fechaContratacion: string | null
   activo: boolean
 }
 
-const UAvatar = resolveComponent('UAvatar')
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
-const UCheckbox = resolveComponent('UCheckbox')
 const UBadge = resolveComponent('UBadge')
-const UModal = resolveComponent('UModal')
 
 const props = defineProps<{
   tecnicos: { data: Tecnico[] }
@@ -34,7 +29,6 @@ const toast = useToast()
 const table = useTemplateRef('table')
 
 const globalFilter = ref('')
-const columnVisibility = ref()
 const rowSelection = ref({})
 
 const isDeleteModalOpen = ref(false)
@@ -56,15 +50,11 @@ const confirmDelete = (tecnico: Tecnico) => {
 const handleDelete = () => {
   if (!tecnicoToDelete.value) return
 
-  router.delete(route('api.tecnicos.destroy', tecnicoToDelete.value.id), {
+  router.delete(route('tecnicos.destroy', tecnicoToDelete.value.id), {
     preserveScroll: true,
     onSuccess: () => {
       isDeleteModalOpen.value = false
       tecnicoToDelete.value = null
-      toast.add({ title: 'Tecnico eliminado correctamente' })
-    },
-    onError: (errors) => {
-      toast.add({ title: 'Error al eliminar', description: errors.message, color: 'error' })
     }
   })
 }
@@ -79,6 +69,15 @@ function getRowItems(row: Row<Tecnico>) {
     },
     { type: 'separator' },
     {
+      label: 'Copiar ID',
+      icon: 'i-lucide-copy',
+      onSelect() {
+        navigator.clipboard.writeText(row.original.id.toString())
+        toast.add({ title: 'ID copiado' })
+      }
+    },
+    { type: 'separator' },
+    {
       label: 'Eliminar tecnico',
       icon: 'i-lucide-trash',
       color: 'error',
@@ -89,36 +88,20 @@ function getRowItems(row: Row<Tecnico>) {
 
 const columns: TableColumn<Tecnico>[] = [
   {
-    id: 'select',
-    header: ({ table }) => h(UCheckbox, {
-      'modelValue': table.getIsSomePageRowsSelected() ? 'indeterminate' : table.getIsAllPageRowsSelected(),
-      'onUpdate:modelValue': (value: boolean | 'indeterminate') => table.toggleAllPageRowsSelected(!!value),
-      'ariaLabel': 'Seleccionar todos'
-    }),
-    cell: ({ row }) => h(UCheckbox, {
-      'modelValue': row.getIsSelected(),
-      'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
-      'ariaLabel': 'Seleccionar fila'
-    })
-  },
-  {
-    accessorKey: 'nombreCompleto',
-    header: 'Nombre',
-    cell: ({ row }) => h('div', { class: 'flex items-center gap-3' }, [
-      h(UAvatar, {
-        src: `https://ui-avatars.com/api/?name=${encodeURIComponent(row.original.nombreCompleto)}&background=random`,
-        alt: row.original.nombreCompleto,
-        size: 'lg'
-      }),
-      h('div', undefined, [
-        h('p', { class: 'font-medium text-highlighted' }, row.original.nombreCompleto),
-        h('p', { class: 'text-sm text-muted' }, row.original.especialidad)
-      ])
+    accessorKey: 'usuario',
+    header: 'Usuario',
+    cell: ({ row }) => h('div', undefined, [
+      h('p', { class: 'font-medium text-highlighted' }, row.original.usuario),
+      h('p', { class: 'text-sm text-muted' }, row.original.email)
     ])
   },
-  { accessorKey: 'cedula', header: 'Cedula' },
-  { accessorKey: 'email', header: 'Email' },
-  { accessorKey: 'telefono', header: 'Telefono' },
+  { accessorKey: 'especialidad', header: 'Especialidad' },
+  { accessorKey: 'certificacion', header: 'Certificacion' },
+  {
+    accessorKey: 'fechaContratacion',
+    header: 'Contratacion',
+    cell: ({ row }) => row.original.fechaContratacion || '-'
+  },
   {
     accessorKey: 'activo',
     header: 'Estado',
@@ -160,7 +143,6 @@ const pagination = ref({ pageIndex: 0, pageSize: 10 })
 
       <UTable
         ref="table"
-        v-model:column-visibility="columnVisibility"
         v-model:row-selection="rowSelection"
         v-model:pagination="pagination"
         v-model:global-filter="globalFilter"
@@ -172,10 +154,7 @@ const pagination = ref({ pageIndex: 0, pageSize: 10 })
       />
 
       <div class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto">
-        <div class="text-sm text-muted">
-          {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} de
-          {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} fila(s) seleccionada(s).
-        </div>
+        <div class="text-sm text-muted">Total: {{ tecnicos.data.length }} tecnicos</div>
         <UPagination
           :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
           :items-per-page="table?.tableApi?.getState().pagination.pageSize"
@@ -186,10 +165,15 @@ const pagination = ref({ pageIndex: 0, pageSize: 10 })
     </template>
   </UDashboardPanel>
 
-  <UModal v-model:open="isDeleteModalOpen" title="Confirmar eliminacion" :description="`¿Esta seguro de que desea eliminar al tecnico ${tecnicoToDelete?.nombreCompleto}?`">
+  <!-- Modal de confirmacion de eliminacion -->
+  <UModal
+    v-model:open="isDeleteModalOpen"
+    title="Confirmar eliminacion"
+    :description="`¿Esta seguro de que desea eliminar al tecnico ${tecnicoToDelete?.usuario}? Esta accion no se puede deshacer.`"
+  >
     <template #footer>
       <div class="flex justify-end gap-3">
-        <UButton label="Eliminar" color="error" @click="handleDelete" />
+        <UButton label="Eliminar" color="error" variant="solid" icon="i-lucide-trash" @click="handleDelete" />
         <UButton label="Cancelar" color="neutral" variant="subtle" @click="isDeleteModalOpen = false" />
       </div>
     </template>

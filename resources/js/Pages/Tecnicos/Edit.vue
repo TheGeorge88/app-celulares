@@ -1,129 +1,163 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { reactive, ref, computed } from 'vue'
+import { router, usePage } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
-import { z } from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
+
+interface Usuario {
+  id: string
+  name: string
+  email: string
+}
 
 interface Tecnico {
   id: string
-  cedula: string
-  nombre: string
-  apellido: string
-  telefono: string
+  userId: string
+  usuario: string
   email: string
   especialidad: string
+  certificacion: string | null
+  fechaContratacion: string | null
   activo: boolean
 }
 
 const props = defineProps<{
   tecnico: { data: Tecnico }
+  usuarios: Usuario[]
 }>()
 
-const toast = useToast()
-
-const schema = z.object({
-  cedula: z.string().min(1, 'La cedula es obligatoria'),
-  nombre: z.string().min(1, 'El nombre es obligatorio'),
-  apellido: z.string().min(1, 'El apellido es obligatorio'),
-  telefono: z.string().min(1, 'El telefono es obligatorio'),
-  email: z.string().email('Email invalido'),
-  especialidad: z.string().min(1, 'La especialidad es obligatoria'),
-  activo: z.boolean()
-})
-
-type Schema = z.output<typeof schema>
-
-const state = ref<Partial<Schema>>({
-  cedula: props.tecnico.data.cedula,
-  nombre: props.tecnico.data.nombre,
-  apellido: props.tecnico.data.apellido,
-  telefono: props.tecnico.data.telefono,
-  email: props.tecnico.data.email,
+const state = reactive({
+  userId: props.tecnico.data.userId,
   especialidad: props.tecnico.data.especialidad,
-  activo: props.tecnico.data.activo
+  certificacion: props.tecnico.data.certificacion || '',
+  fechaContratacion: props.tecnico.data.fechaContratacion || '',
+  activo: props.tecnico.data.activo,
 })
 
-const loading = ref(false)
+const page = usePage()
+const backendErrors = computed(() => page.props.errors || {})
 
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  loading.value = true
-  try {
-    const response = await fetch(route('api.tecnicos.update', props.tecnico.data.id), {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '')
-      },
-      credentials: 'include',
-      body: JSON.stringify(event.data)
-    })
+const errors = computed(() => {
+  const result: Record<string, string> = {}
+  Object.keys(backendErrors.value).forEach(key => {
+    const error = backendErrors.value[key]
+    result[key] = Array.isArray(error) ? error[0] : error
+  })
+  return result
+})
 
-    if (response.ok) {
-      toast.add({ title: 'Tecnico actualizado correctamente', color: 'success' })
-      router.visit(route('tecnicos.index'))
-    } else {
-      const error = await response.json()
-      toast.add({ title: 'Error', description: error.message, color: 'error' })
+const isLoading = ref(false)
+
+const usuarioOptions = computed(() =>
+  props.usuarios.map(u => ({ label: `${u.name} - ${u.email}`, value: u.id }))
+)
+
+const handleSubmit = () => {
+  isLoading.value = true
+
+  router.put(route('tecnicos.update', props.tecnico.data.id), state, {
+    onFinish: () => {
+      isLoading.value = false
+    },
+    onError: (errors) => {
+      console.error('Errores de validacion:', errors)
+      isLoading.value = false
     }
-  } catch (error) {
-    toast.add({ title: 'Error de conexion', color: 'error' })
-  } finally {
-    loading.value = false
-  }
+  })
 }
 
-const goBack = () => router.visit(route('tecnicos.index'))
+const handleCancel = () => {
+  router.visit(route('tecnicos.index'))
+}
 </script>
 
 <template>
-  <UDashboardPanel id="tecnicos-edit">
+  <UDashboardPanel>
     <template #header>
       <UDashboardNavbar title="Editar Tecnico">
         <template #leading>
-          <UButton icon="i-lucide-arrow-left" color="neutral" variant="ghost" @click="goBack" />
+          <UButton icon="i-lucide-arrow-left" color="neutral" variant="ghost" @click="handleCancel" />
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
-      <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UFormField label="Cedula" name="cedula">
-            <UInput v-model="state.cedula" />
-          </UFormField>
-
-          <UFormField label="Especialidad" name="especialidad">
-            <UInput v-model="state.especialidad" />
-          </UFormField>
-
-          <UFormField label="Nombre" name="nombre">
-            <UInput v-model="state.nombre" />
-          </UFormField>
-
-          <UFormField label="Apellido" name="apellido">
-            <UInput v-model="state.apellido" />
-          </UFormField>
-
-          <UFormField label="Email" name="email">
-            <UInput v-model="state.email" type="email" />
-          </UFormField>
-
-          <UFormField label="Telefono" name="telefono">
-            <UInput v-model="state.telefono" />
-          </UFormField>
-
-          <UFormField label="Estado" name="activo">
-            <UCheckbox v-model="state.activo" label="Activo" />
-          </UFormField>
+      <div class="p-6">
+        <div class="mb-6">
+          <h2 class="text-2xl font-semibold">Editar Tecnico</h2>
+          <p class="text-sm text-muted mt-1">Modifique los datos del tecnico</p>
         </div>
 
-        <div class="flex gap-3">
-          <UButton type="submit" label="Actualizar" color="primary" :loading="loading" />
-          <UButton label="Cancelar" color="neutral" variant="subtle" @click="goBack" />
-        </div>
-      </UForm>
+        <form @submit.prevent="handleSubmit" class="space-y-6 max-w-2xl">
+          <!-- Usuario -->
+          <UFormField label="Usuario" name="userId" required :error="errors.user_id" size="xl" class="w-full">
+            <USelectMenu
+              v-model="state.userId"
+              :items="usuarioOptions"
+              placeholder="Seleccione un usuario..."
+              size="xl"
+              class="w-full"
+            />
+          </UFormField>
+
+          <!-- Fila 1: Especialidad y Certificacion -->
+          <div class="grid grid-cols-2 gap-8">
+            <UFormField label="Especialidad" name="especialidad" required :error="errors.especialidad" size="xl" class="w-full">
+              <UInput
+                v-model="state.especialidad"
+                placeholder="Ej: Reparacion de pantallas, microsoldadura..."
+                icon="i-lucide-wrench"
+                size="xl"
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField label="Certificacion" name="certificacion" :error="errors.certificacion" size="xl" class="w-full">
+              <UInput
+                v-model="state.certificacion"
+                placeholder="Ej: CERT-001234"
+                icon="i-lucide-badge-check"
+                size="xl"
+                class="w-full"
+              />
+            </UFormField>
+          </div>
+
+          <!-- Fila 2: Fecha de Contratacion y Estado -->
+          <div class="grid grid-cols-2 gap-8">
+            <UFormField label="Fecha de Contratacion" name="fechaContratacion" :error="errors.fecha_contratacion" size="xl" class="w-full">
+              <UInput
+                v-model="state.fechaContratacion"
+                type="date"
+                size="xl"
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField label="Estado" name="activo" :error="errors.activo" size="xl" class="w-full">
+              <UCheckbox v-model="state.activo" label="Activo" />
+            </UFormField>
+          </div>
+
+          <!-- Botones -->
+          <div class="flex justify-end gap-3 pt-4">
+            <UButton
+              type="button"
+              color="neutral"
+              variant="outline"
+              label="Cancelar"
+              @click="handleCancel"
+              :disabled="isLoading"
+            />
+            <UButton
+              type="submit"
+              color="primary"
+              label="Actualizar Tecnico"
+              icon="i-lucide-save"
+              :loading="isLoading"
+            />
+          </div>
+        </form>
+      </div>
     </template>
   </UDashboardPanel>
 </template>

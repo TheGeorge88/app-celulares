@@ -111,48 +111,55 @@ const goBack = () => router.visit(route('productos.index'))
     </template>
 
     <template #body>
-      <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UFormField label="Codigo" name="codigo">
-            <UInput v-model="state.codigo" />
-          </UFormField>
-
-          <UFormField label="Nombre" name="nombre">
-            <UInput v-model="state.nombre" />
-          </UFormField>
-
-          <UFormField label="Categoria" name="categoriaId">
-            <USelect v-model="state.categoriaId" :items="categoriaItems" value-key="value" placeholder="Seleccionar categoria" />
-          </UFormField>
-
-          <UFormField label="Tipo" name="tipo">
-            <USelect v-model="state.tipo" :items="tipoItems" value-key="value" />
-          </UFormField>
+      <div class="p-6">
+        <div class="mb-6">
+          <h2 class="text-2xl font-semibold">Editar Producto</h2>
+          <p class="text-sm text-muted mt-1">Modifique los datos del producto</p>
         </div>
 
-        <UFormField label="Descripcion" name="descripcion">
-          <UTextarea v-model="state.descripcion" />
-        </UFormField>
+        <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
+          <div class="grid grid-cols-2 gap-8">
+            <UFormField label="Codigo" name="codigo" size="xl" class="w-full">
+              <UInput v-model="state.codigo" size="xl" class="w-full" />
+            </UFormField>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UFormField label="Precio unitario" name="precioUnitario">
-            <UInput v-model.number="state.precioUnitario" type="number" step="0.01" min="0" />
+            <UFormField label="Nombre" name="nombre" size="xl" class="w-full">
+              <UInput v-model="state.nombre" size="xl" class="w-full" />
+            </UFormField>
+
+            <UFormField label="Categoria" name="categoriaId" size="xl" class="w-full">
+              <USelect v-model="state.categoriaId" :items="categoriaItems" value-key="value" placeholder="Seleccionar categoria" size="xl" class="w-full" />
+            </UFormField>
+
+            <UFormField label="Tipo" name="tipo" size="xl" class="w-full">
+              <USelect v-model="state.tipo" :items="tipoItems" value-key="value" size="xl" class="w-full" />
+            </UFormField>
+          </div>
+
+          <UFormField label="Descripcion" name="descripcion" size="xl" class="w-full">
+            <UTextarea v-model="state.descripcion" size="xl" class="w-full" />
           </UFormField>
 
-          <UFormField label="Stock" name="stock">
-            <UInput v-model.number="state.stock" type="number" min="0" />
+          <div class="grid grid-cols-2 gap-8">
+            <UFormField label="Precio unitario" name="precioUnitario" size="xl" class="w-full">
+              <UInput v-model.number="state.precioUnitario" type="number" step="0.01" min="0" size="xl" class="w-full" />
+            </UFormField>
+
+            <UFormField label="Stock" name="stock" size="xl" class="w-full">
+              <UInput v-model.number="state.stock" type="number" min="0" size="xl" class="w-full" />
+            </UFormField>
+          </div>
+
+          <UFormField label="Estado" name="activo" size="xl" class="w-full">
+            <UCheckbox v-model="state.activo" label="Activo" />
           </UFormField>
-        </div>
 
-        <UFormField label="Estado" name="activo">
-          <UCheckbox v-model="state.activo" label="Activo" />
-        </UFormField>
-
-        <div class="flex gap-3">
-          <UButton type="submit" label="Actualizar" color="primary" :loading="loading" />
-          <UButton label="Cancelar" color="neutral" variant="subtle" @click="goBack" />
-        </div>
-      </UForm>
+          <div class="flex justify-end gap-3 pt-4">
+            <UButton type="submit" label="Actualizar Producto" color="primary" :loading="loading" icon="i-lucide-save" />
+            <UButton label="Cancelar" color="neutral" variant="outline" @click="goBack" />
+          </div>
+        </UForm>
+      </div>
     </template>
   </UDashboardPanel>
 </template>

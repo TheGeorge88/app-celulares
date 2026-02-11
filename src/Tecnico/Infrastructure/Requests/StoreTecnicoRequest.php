@@ -16,12 +16,10 @@ class StoreTecnicoRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'cedula' => $this->cedula,
-            'nombre' => $this->nombre,
-            'apellido' => $this->apellido,
-            'telefono' => $this->telefono,
-            'email' => $this->email,
+            'user_id' => $this->userId ?? $this->user_id,
             'especialidad' => $this->especialidad,
+            'certificacion' => $this->certificacion,
+            'fecha_contratacion' => $this->fechaContratacion ?? $this->fecha_contratacion,
             'activo' => $this->activo ?? true,
         ]);
     }
@@ -29,12 +27,10 @@ class StoreTecnicoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cedula' => 'required|string|max:20|unique:tecnicos,cedula',
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
-            'telefono' => 'required|string|max:20',
-            'email' => 'required|email|max:150|unique:tecnicos,email',
+            'user_id' => 'required|uuid|exists:users,id|unique:tecnicos,user_id',
             'especialidad' => 'required|string|max:100',
+            'certificacion' => 'nullable|string|max:100',
+            'fecha_contratacion' => 'nullable|date',
             'activo' => 'sometimes|boolean',
         ];
     }
@@ -42,14 +38,9 @@ class StoreTecnicoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'cedula.required' => 'La cédula es obligatoria',
-            'cedula.unique' => 'La cédula ya está registrada',
-            'nombre.required' => 'El nombre es obligatorio',
-            'apellido.required' => 'El apellido es obligatorio',
-            'telefono.required' => 'El teléfono es obligatorio',
-            'email.required' => 'El email es obligatorio',
-            'email.email' => 'El email debe ser válido',
-            'email.unique' => 'El email ya está registrado',
+            'user_id.required' => 'El usuario es obligatorio',
+            'user_id.exists' => 'El usuario seleccionado no existe',
+            'user_id.unique' => 'Este usuario ya tiene un técnico asignado',
             'especialidad.required' => 'La especialidad es obligatoria',
         ];
     }

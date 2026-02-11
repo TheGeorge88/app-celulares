@@ -1,4 +1,4 @@
-pp<script setup lang="ts">
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { router } from '@inertiajs/vue3'
 import type { NavigationMenuItem } from '@nuxt/ui'

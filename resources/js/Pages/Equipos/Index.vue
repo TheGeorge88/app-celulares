@@ -44,28 +44,16 @@ const confirmDelete = (equipo: Equipo) => {
   isDeleteModalOpen.value = true
 }
 
-const handleDelete = async () => {
+const handleDelete = () => {
   if (!equipoToDelete.value) return
-  try {
-    const response = await fetch(route('api.equipos.destroy', equipoToDelete.value.id), {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '')
-      },
-      credentials: 'include'
-    })
-    if (response.ok) {
-      toast.add({ title: 'Equipo eliminado', color: 'success' })
-      router.reload()
-    } else {
-      const error = await response.json()
-      toast.add({ title: 'Error', description: error.message, color: 'error' })
+
+  router.delete(route('equipos.destroy', equipoToDelete.value.id), {
+    preserveScroll: true,
+    onSuccess: () => {
+      isDeleteModalOpen.value = false
+      equipoToDelete.value = null
     }
-  } finally {
-    isDeleteModalOpen.value = false
-    equipoToDelete.value = null
-  }
+  })
 }
 
 function getRowItems(row: Row<Equipo>) {

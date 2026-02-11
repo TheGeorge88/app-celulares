@@ -108,41 +108,50 @@ const goBack = () => router.visit(route('ordenes-reparacion.index'))
     </template>
 
     <template #body>
-      <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
-        <UFormField label="Cliente" name="clienteId">
-          <USelectMenu v-model="state.clienteId" :items="clienteOptions" placeholder="Seleccione un cliente" searchable />
-        </UFormField>
-
-        <UFormField label="Equipo" name="equipoId">
-          <USelectMenu
-            v-model="state.equipoId"
-            :items="equipoOptions"
-            placeholder="Seleccione un equipo del cliente"
-            :disabled="!state.clienteId"
-          />
-        </UFormField>
-
-        <UFormField label="Tecnico asignado (opcional)" name="tecnicoId">
-          <USelectMenu v-model="state.tecnicoId" :items="tecnicoOptions" placeholder="Asignar tecnico" />
-        </UFormField>
-
-        <UFormField label="Problema reportado" name="problemaReportado">
-          <UTextarea v-model="state.problemaReportado" placeholder="Describa el problema que presenta el equipo..." rows="4" />
-        </UFormField>
-
-        <UFormField label="Costo estimado (opcional)" name="costoEstimado">
-          <UInput v-model.number="state.costoEstimado" type="number" step="0.01" placeholder="0.00" />
-        </UFormField>
-
-        <UFormField label="Observaciones" name="observaciones">
-          <UTextarea v-model="state.observaciones" placeholder="Observaciones adicionales..." />
-        </UFormField>
-
-        <div class="flex gap-3">
-          <UButton type="submit" label="Crear Orden" color="primary" :loading="loading" />
-          <UButton label="Cancelar" color="neutral" variant="subtle" @click="goBack" />
+      <div class="p-6">
+        <div class="mb-6">
+          <h2 class="text-2xl font-semibold">Nueva Orden de Reparacion</h2>
+          <p class="text-sm text-muted mt-1">Complete los datos de la orden</p>
         </div>
-      </UForm>
+
+        <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
+          <UFormField label="Cliente" name="clienteId" size="xl" class="w-full">
+            <USelectMenu v-model="state.clienteId" :items="clienteOptions" placeholder="Seleccione un cliente" searchable size="xl" class="w-full" />
+          </UFormField>
+
+          <UFormField label="Equipo" name="equipoId" size="xl" class="w-full">
+            <USelectMenu
+              v-model="state.equipoId"
+              :items="equipoOptions"
+              placeholder="Seleccione un equipo del cliente"
+              :disabled="!state.clienteId"
+              size="xl"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField label="Tecnico asignado (opcional)" name="tecnicoId" size="xl" class="w-full">
+            <USelectMenu v-model="state.tecnicoId" :items="tecnicoOptions" placeholder="Asignar tecnico" size="xl" class="w-full" />
+          </UFormField>
+
+          <UFormField label="Problema reportado" name="problemaReportado" size="xl" class="w-full">
+            <UTextarea v-model="state.problemaReportado" placeholder="Describa el problema que presenta el equipo..." rows="4" size="xl" class="w-full" />
+          </UFormField>
+
+          <UFormField label="Costo estimado (opcional)" name="costoEstimado" size="xl" class="w-full">
+            <UInput v-model.number="state.costoEstimado" type="number" step="0.01" placeholder="0.00" size="xl" class="w-full" />
+          </UFormField>
+
+          <UFormField label="Observaciones" name="observaciones" size="xl" class="w-full">
+            <UTextarea v-model="state.observaciones" placeholder="Observaciones adicionales..." size="xl" class="w-full" />
+          </UFormField>
+
+          <div class="flex justify-end gap-3 pt-4">
+            <UButton type="submit" label="Crear Orden" color="primary" :loading="loading" icon="i-lucide-save" />
+            <UButton label="Cancelar" color="neutral" variant="outline" @click="goBack" />
+          </div>
+        </UForm>
+      </div>
     </template>
   </UDashboardPanel>
 </template>

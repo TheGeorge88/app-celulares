@@ -6,33 +6,30 @@ use DateTimeImmutable;
 class Cliente
 {
     private string $id;
+    private string $userId;
     private string $tipoDocumento;
     private string $numeroDocumento;
     private string $razonSocial;
     private string $direccion;
-    private string $telefono;
-    private string $email;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
 
     public function __construct(
         string $id,
+        string $userId,
         string $tipoDocumento,
         string $numeroDocumento,
         string $razonSocial,
         string $direccion,
-        string $telefono,
-        string $email,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ) {
         $this->id = $id;
+        $this->userId = $userId;
         $this->tipoDocumento = $tipoDocumento;
         $this->numeroDocumento = $numeroDocumento;
         $this->razonSocial = $razonSocial;
         $this->direccion = $direccion;
-        $this->telefono = $telefono;
-        $this->email = $email;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -40,6 +37,11 @@ class Cliente
     public function getId(): string
     {
         return $this->id;
+    }
+
+    public function getUserId(): string
+    {
+        return $this->userId;
     }
 
     public function getTipoDocumento(): string
@@ -62,16 +64,6 @@ class Cliente
         return $this->direccion;
     }
 
-    public function getTelefono(): string
-    {
-        return $this->telefono;
-    }
-
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
@@ -80,6 +72,11 @@ class Cliente
     public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    public function updateUserId(string $userId): void
+    {
+        $this->userId = $userId;
     }
 
     public function updateTipoDocumento(string $tipoDocumento): void
@@ -102,26 +99,15 @@ class Cliente
         $this->direccion = $direccion;
     }
 
-    public function updateTelefono(string $telefono): void
-    {
-        $this->telefono = $telefono;
-    }
-
-    public function updateEmail(string $email): void
-    {
-        $this->email = $email;
-    }
-
     public function toArray(): array
     {
         return [
             'id' => $this->id,
+            'userId' => $this->userId,
             'tipoDocumento' => $this->tipoDocumento,
             'numeroDocumento' => $this->numeroDocumento,
             'razonSocial' => $this->razonSocial,
             'direccion' => $this->direccion,
-            'telefono' => $this->telefono,
-            'email' => $this->email,
             'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
         ];

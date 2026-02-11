@@ -78,14 +78,14 @@ const columns: TableColumn<Cliente>[] = [
     ])
   },
   {
+    accessorKey: 'usuario',
+    header: 'Usuario',
+    cell: ({ row }) => row.original.usuario || '-'
+  },
+  {
     accessorKey: 'numeroDocumento',
     header: 'Documento',
     cell: ({ row }) => row.original.numeroDocumento
-  },
-  {
-    accessorKey: 'telefono',
-    header: 'Telefono',
-    cell: ({ row }) => row.original.telefono || '-'
   },
   {
     accessorKey: 'direccion',
@@ -144,11 +144,11 @@ const pagination = ref({ pageIndex: 0, pageSize: 10 })
     </template>
   </UDashboardPanel>
 
-  <!-- Modal de confirmación de eliminación -->
+  <!-- Modal de confirmacion de eliminacion -->
   <UModal
     v-model:open="isDeleteModalOpen"
-    title="Confirmar eliminación"
-    :description="`¿Está seguro de que desea eliminar el cliente ${clienteToDelete?.razonSocial}? Esta acción no se puede deshacer.`"
+    title="Confirmar eliminacion"
+    :description="`¿Esta seguro de que desea eliminar el cliente ${clienteToDelete?.razonSocial}? Esta accion no se puede deshacer.`"
   >
     <template #footer>
       <div class="flex justify-end gap-3">

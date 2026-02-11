@@ -11,12 +11,11 @@ class ClienteMapper
     {
         return new Cliente(
             id: $model->id,
+            userId: $model->user_id,
             tipoDocumento: $model->tipo_documento,
             numeroDocumento: $model->numero_documento,
             razonSocial: $model->razon_social,
             direccion: $model->direccion,
-            telefono: $model->telefono,
-            email: $model->email,
             createdAt: new \DateTimeImmutable($model->created_at->toDateTimeString()),
             updatedAt: new \DateTimeImmutable($model->updated_at->toDateTimeString())
         );
@@ -26,12 +25,11 @@ class ClienteMapper
     {
         return [
             'id' => $cliente->getId(),
+            'user_id' => $cliente->getUserId(),
             'tipo_documento' => $cliente->getTipoDocumento(),
             'numero_documento' => $cliente->getNumeroDocumento(),
             'razon_social' => $cliente->getRazonSocial(),
             'direccion' => $cliente->getDireccion(),
-            'telefono' => $cliente->getTelefono(),
-            'email' => $cliente->getEmail(),
         ];
     }
 }

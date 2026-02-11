@@ -15,19 +15,20 @@ class TecnicoController extends Controller
 {
     public function index(): JsonResponse
     {
-        $tecnicos = TecnicoEloquentModel::orderBy('nombre')->get();
+        $tecnicos = TecnicoEloquentModel::with('user')->orderBy('created_at', 'desc')->get();
         return response()->json(TecnicoResource::collection($tecnicos));
     }
 
     public function store(StoreTecnicoRequest $request): JsonResponse
     {
         $tecnico = TecnicoEloquentModel::create($request->validated());
+        $tecnico->load('user');
         return response()->json(new TecnicoResource($tecnico), 201);
     }
 
     public function show(string $id): JsonResponse
     {
-        $tecnico = TecnicoEloquentModel::find($id);
+        $tecnico = TecnicoEloquentModel::with('user')->find($id);
 
         if (!$tecnico) {
             return response()->json([
@@ -49,6 +50,7 @@ class TecnicoController extends Controller
         }
 
         $tecnico->update($request->validated());
+        $tecnico->load('user');
 
         return response()->json(new TecnicoResource($tecnico));
     }
@@ -63,7 +65,6 @@ class TecnicoController extends Controller
             ], 404);
         }
 
-        // Verificar si tiene órdenes de reparación asignadas
         if ($tecnico->ordenesReparacion()->exists()) {
             return response()->json([
                 'message' => 'No se puede eliminar el técnico porque tiene órdenes de reparación asignadas'
@@ -79,7 +80,10 @@ class TecnicoController extends Controller
 
     public function activos(): JsonResponse
     {
-        $tecnicos = TecnicoEloquentModel::where('activo', true)->orderBy('nombre')->get();
+        $tecnicos = TecnicoEloquentModel::with('user')
+            ->where('activo', true)
+            ->orderBy('created_at', 'desc')
+            ->get();
         return response()->json(TecnicoResource::collection($tecnicos));
     }
 }

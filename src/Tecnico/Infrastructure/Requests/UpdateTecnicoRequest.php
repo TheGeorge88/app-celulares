@@ -17,12 +17,14 @@ class UpdateTecnicoRequest extends FormRequest
     {
         $data = [];
 
-        if ($this->has('cedula')) $data['cedula'] = $this->cedula;
-        if ($this->has('nombre')) $data['nombre'] = $this->nombre;
-        if ($this->has('apellido')) $data['apellido'] = $this->apellido;
-        if ($this->has('telefono')) $data['telefono'] = $this->telefono;
-        if ($this->has('email')) $data['email'] = $this->email;
+        if ($this->has('userId') || $this->has('user_id')) {
+            $data['user_id'] = $this->userId ?? $this->user_id;
+        }
         if ($this->has('especialidad')) $data['especialidad'] = $this->especialidad;
+        if ($this->has('certificacion')) $data['certificacion'] = $this->certificacion;
+        if ($this->has('fechaContratacion') || $this->has('fecha_contratacion')) {
+            $data['fecha_contratacion'] = $this->fechaContratacion ?? $this->fecha_contratacion;
+        }
         if ($this->has('activo')) $data['activo'] = $this->activo;
 
         $this->merge($data);
@@ -33,12 +35,10 @@ class UpdateTecnicoRequest extends FormRequest
         $tecnicoId = $this->route('id') ?? $this->route('tecnico');
 
         return [
-            'cedula' => 'sometimes|string|max:20|unique:tecnicos,cedula,' . $tecnicoId,
-            'nombre' => 'sometimes|string|max:100',
-            'apellido' => 'sometimes|string|max:100',
-            'telefono' => 'sometimes|string|max:20',
-            'email' => 'sometimes|email|max:150|unique:tecnicos,email,' . $tecnicoId,
+            'user_id' => 'sometimes|uuid|exists:users,id|unique:tecnicos,user_id,' . $tecnicoId,
             'especialidad' => 'sometimes|string|max:100',
+            'certificacion' => 'nullable|string|max:100',
+            'fecha_contratacion' => 'nullable|date',
             'activo' => 'sometimes|boolean',
         ];
     }
@@ -46,9 +46,8 @@ class UpdateTecnicoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'cedula.unique' => 'La cédula ya está registrada',
-            'email.email' => 'El email debe ser válido',
-            'email.unique' => 'El email ya está registrado',
+            'user_id.exists' => 'El usuario seleccionado no existe',
+            'user_id.unique' => 'Este usuario ya tiene un técnico asignado',
         ];
     }
 }

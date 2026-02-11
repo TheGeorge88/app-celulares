@@ -100,48 +100,55 @@ const goBack = () => router.visit(route('ordenes-reparacion.show', props.orden.d
     </template>
 
     <template #body>
-      <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UFormField label="Estado" name="estado">
-            <USelectMenu v-model="state.estado" :items="estados" />
-          </UFormField>
-
-          <UFormField label="Tecnico asignado" name="tecnicoId">
-            <USelectMenu v-model="state.tecnicoId" :items="tecnicoOptions" />
-          </UFormField>
+      <div class="p-6">
+        <div class="mb-6">
+          <h2 class="text-2xl font-semibold">Editar Orden {{ orden.data.codigoSeguimiento }}</h2>
+          <p class="text-sm text-muted mt-1">Modifique los datos de la orden</p>
         </div>
 
-        <UFormField label="Problema reportado" name="problemaReportado">
-          <UTextarea v-model="state.problemaReportado" rows="3" />
-        </UFormField>
+        <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
+          <div class="grid grid-cols-2 gap-8">
+            <UFormField label="Estado" name="estado" size="xl" class="w-full">
+              <USelectMenu v-model="state.estado" :items="estados" size="xl" class="w-full" />
+            </UFormField>
 
-        <UFormField label="Diagnostico" name="diagnostico">
-          <UTextarea v-model="state.diagnostico" rows="3" placeholder="Resultado del diagnostico tecnico..." />
-        </UFormField>
+            <UFormField label="Tecnico asignado" name="tecnicoId" size="xl" class="w-full">
+              <USelectMenu v-model="state.tecnicoId" :items="tecnicoOptions" size="xl" class="w-full" />
+            </UFormField>
+          </div>
 
-        <UFormField label="Solucion aplicada" name="solucionAplicada">
-          <UTextarea v-model="state.solucionAplicada" rows="3" placeholder="Descripcion de la reparacion realizada..." />
-        </UFormField>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UFormField label="Costo estimado" name="costoEstimado">
-            <UInput v-model.number="state.costoEstimado" type="number" step="0.01" />
+          <UFormField label="Problema reportado" name="problemaReportado" size="xl" class="w-full">
+            <UTextarea v-model="state.problemaReportado" rows="3" size="xl" class="w-full" />
           </UFormField>
 
-          <UFormField label="Costo final" name="costoFinal">
-            <UInput v-model.number="state.costoFinal" type="number" step="0.01" />
+          <UFormField label="Diagnostico" name="diagnostico" size="xl" class="w-full">
+            <UTextarea v-model="state.diagnostico" rows="3" placeholder="Resultado del diagnostico tecnico..." size="xl" class="w-full" />
           </UFormField>
-        </div>
 
-        <UFormField label="Observaciones" name="observaciones">
-          <UTextarea v-model="state.observaciones" rows="2" />
-        </UFormField>
+          <UFormField label="Solucion aplicada" name="solucionAplicada" size="xl" class="w-full">
+            <UTextarea v-model="state.solucionAplicada" rows="3" placeholder="Descripcion de la reparacion realizada..." size="xl" class="w-full" />
+          </UFormField>
 
-        <div class="flex gap-3">
-          <UButton type="submit" label="Guardar cambios" color="primary" :loading="loading" />
-          <UButton label="Cancelar" color="neutral" variant="subtle" @click="goBack" />
-        </div>
-      </UForm>
+          <div class="grid grid-cols-2 gap-8">
+            <UFormField label="Costo estimado" name="costoEstimado" size="xl" class="w-full">
+              <UInput v-model.number="state.costoEstimado" type="number" step="0.01" size="xl" class="w-full" />
+            </UFormField>
+
+            <UFormField label="Costo final" name="costoFinal" size="xl" class="w-full">
+              <UInput v-model.number="state.costoFinal" type="number" step="0.01" size="xl" class="w-full" />
+            </UFormField>
+          </div>
+
+          <UFormField label="Observaciones" name="observaciones" size="xl" class="w-full">
+            <UTextarea v-model="state.observaciones" rows="2" size="xl" class="w-full" />
+          </UFormField>
+
+          <div class="flex justify-end gap-3 pt-4">
+            <UButton type="submit" label="Guardar cambios" color="primary" :loading="loading" icon="i-lucide-save" />
+            <UButton label="Cancelar" color="neutral" variant="outline" @click="goBack" />
+          </div>
+        </UForm>
+      </div>
     </template>
   </UDashboardPanel>
 </template>

@@ -9,35 +9,29 @@ use DateTimeImmutable;
 class Tecnico
 {
     private string $id;
-    private string $cedula;
-    private string $nombre;
-    private string $apellido;
-    private string $telefono;
-    private string $email;
+    private string $userId;
     private string $especialidad;
+    private ?string $certificacion;
+    private ?DateTimeImmutable $fechaContratacion;
     private bool $activo;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
 
     public function __construct(
         string $id,
-        string $cedula,
-        string $nombre,
-        string $apellido,
-        string $telefono,
-        string $email,
+        string $userId,
         string $especialidad,
+        ?string $certificacion,
+        ?DateTimeImmutable $fechaContratacion,
         bool $activo,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ) {
         $this->id = $id;
-        $this->cedula = $cedula;
-        $this->nombre = $nombre;
-        $this->apellido = $apellido;
-        $this->telefono = $telefono;
-        $this->email = $email;
+        $this->userId = $userId;
         $this->especialidad = $especialidad;
+        $this->certificacion = $certificacion;
+        $this->fechaContratacion = $fechaContratacion;
         $this->activo = $activo;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
@@ -48,34 +42,24 @@ class Tecnico
         return $this->id;
     }
 
-    public function getCedula(): string
+    public function getUserId(): string
     {
-        return $this->cedula;
-    }
-
-    public function getNombre(): string
-    {
-        return $this->nombre;
-    }
-
-    public function getApellido(): string
-    {
-        return $this->apellido;
-    }
-
-    public function getTelefono(): string
-    {
-        return $this->telefono;
-    }
-
-    public function getEmail(): string
-    {
-        return $this->email;
+        return $this->userId;
     }
 
     public function getEspecialidad(): string
     {
         return $this->especialidad;
+    }
+
+    public function getCertificacion(): ?string
+    {
+        return $this->certificacion;
+    }
+
+    public function getFechaContratacion(): ?DateTimeImmutable
+    {
+        return $this->fechaContratacion;
     }
 
     public function isActivo(): bool
@@ -93,21 +77,14 @@ class Tecnico
         return $this->updatedAt;
     }
 
-    public function getNombreCompleto(): string
-    {
-        return $this->nombre . ' ' . $this->apellido;
-    }
-
     public function toArray(): array
     {
         return [
             'id' => $this->id,
-            'cedula' => $this->cedula,
-            'nombre' => $this->nombre,
-            'apellido' => $this->apellido,
-            'telefono' => $this->telefono,
-            'email' => $this->email,
+            'userId' => $this->userId,
             'especialidad' => $this->especialidad,
+            'certificacion' => $this->certificacion,
+            'fechaContratacion' => $this->fechaContratacion?->format('Y-m-d'),
             'activo' => $this->activo,
             'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),

@@ -168,8 +168,8 @@ const handleCancel = () => {
     </template>
 
     <template #body>
-      <div class="p-2">
-        <div class="mb-1">
+      <div class="p-6">
+        <div class="mb-6">
           <h2 class="text-2xl font-semibold">Nueva Factura</h2>
           <p class="text-sm text-muted mt-1">Complete los datos de la factura</p>
         </div>

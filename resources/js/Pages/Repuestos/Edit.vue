@@ -87,50 +87,57 @@ const goBack = () => router.visit(route('repuestos.index'))
     </template>
 
     <template #body>
-      <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UFormField label="Codigo" name="codigo">
-            <UInput v-model="state.codigo" />
-          </UFormField>
-          <UFormField label="Nombre" name="nombre">
-            <UInput v-model="state.nombre" />
-          </UFormField>
-          <UFormField label="Marca" name="marca">
-            <UInput v-model="state.marca" />
-          </UFormField>
-          <UFormField label="Modelo" name="modelo">
-            <UInput v-model="state.modelo" />
-          </UFormField>
+      <div class="p-6">
+        <div class="mb-6">
+          <h2 class="text-2xl font-semibold">Editar Repuesto</h2>
+          <p class="text-sm text-muted mt-1">Modifique los datos del repuesto</p>
         </div>
 
-        <UFormField label="Descripcion" name="descripcion">
-          <UTextarea v-model="state.descripcion" />
-        </UFormField>
+        <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
+          <div class="grid grid-cols-2 gap-8">
+            <UFormField label="Codigo" name="codigo" size="xl" class="w-full">
+              <UInput v-model="state.codigo" size="xl" class="w-full" />
+            </UFormField>
+            <UFormField label="Nombre" name="nombre" size="xl" class="w-full">
+              <UInput v-model="state.nombre" size="xl" class="w-full" />
+            </UFormField>
+            <UFormField label="Marca" name="marca" size="xl" class="w-full">
+              <UInput v-model="state.marca" size="xl" class="w-full" />
+            </UFormField>
+            <UFormField label="Modelo" name="modelo" size="xl" class="w-full">
+              <UInput v-model="state.modelo" size="xl" class="w-full" />
+            </UFormField>
+          </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UFormField label="Stock" name="stock">
-            <UInput v-model.number="state.stock" type="number" min="0" />
+          <UFormField label="Descripcion" name="descripcion" size="xl" class="w-full">
+            <UTextarea v-model="state.descripcion" size="xl" class="w-full" />
           </UFormField>
-          <UFormField label="Stock minimo" name="stockMinimo">
-            <UInput v-model.number="state.stockMinimo" type="number" min="0" />
-          </UFormField>
-          <UFormField label="Precio compra" name="precioCompra">
-            <UInput v-model.number="state.precioCompra" type="number" step="0.01" min="0" />
-          </UFormField>
-          <UFormField label="Precio venta" name="precioVenta">
-            <UInput v-model.number="state.precioVenta" type="number" step="0.01" min="0" />
-          </UFormField>
-        </div>
 
-        <UFormField label="Estado" name="activo">
-          <UCheckbox v-model="state.activo" label="Activo" />
-        </UFormField>
+          <div class="grid grid-cols-2 gap-8">
+            <UFormField label="Stock" name="stock" size="xl" class="w-full">
+              <UInput v-model.number="state.stock" type="number" min="0" size="xl" class="w-full" />
+            </UFormField>
+            <UFormField label="Stock minimo" name="stockMinimo" size="xl" class="w-full">
+              <UInput v-model.number="state.stockMinimo" type="number" min="0" size="xl" class="w-full" />
+            </UFormField>
+            <UFormField label="Precio compra" name="precioCompra" size="xl" class="w-full">
+              <UInput v-model.number="state.precioCompra" type="number" step="0.01" min="0" size="xl" class="w-full" />
+            </UFormField>
+            <UFormField label="Precio venta" name="precioVenta" size="xl" class="w-full">
+              <UInput v-model.number="state.precioVenta" type="number" step="0.01" min="0" size="xl" class="w-full" />
+            </UFormField>
+          </div>
 
-        <div class="flex gap-3">
-          <UButton type="submit" label="Actualizar" color="primary" :loading="loading" />
-          <UButton label="Cancelar" color="neutral" variant="subtle" @click="goBack" />
-        </div>
-      </UForm>
+          <UFormField label="Estado" name="activo" size="xl" class="w-full">
+            <UCheckbox v-model="state.activo" label="Activo" />
+          </UFormField>
+
+          <div class="flex justify-end gap-3 pt-4">
+            <UButton type="submit" label="Actualizar Repuesto" color="primary" :loading="loading" icon="i-lucide-save" />
+            <UButton label="Cancelar" color="neutral" variant="outline" @click="goBack" />
+          </div>
+        </UForm>
+      </div>
     </template>
   </UDashboardPanel>
 </template>

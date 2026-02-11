@@ -11,12 +11,13 @@ class ClienteResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'userId' => $this->user_id,
+            'usuario' => $this->user?->name,
+            'email' => $this->user?->email,
             'tipoDocumento' => $this->tipo_documento,
             'numeroDocumento' => $this->numero_documento,
             'razonSocial' => $this->razon_social,
             'direccion' => $this->direccion,
-            'telefono' => $this->telefono,
-            'email' => $this->email,
             'createdAt' => $this->created_at?->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];

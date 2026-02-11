@@ -63,24 +63,31 @@ const goBack = () => router.visit(route('categorias.index'))
     </template>
 
     <template #body>
-      <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
-        <UFormField label="Nombre" name="nombre">
-          <UInput v-model="state.nombre" placeholder="Ej: Pantallas, Baterias..." />
-        </UFormField>
-
-        <UFormField label="Descripcion" name="descripcion">
-          <UTextarea v-model="state.descripcion" placeholder="Descripcion de la categoria..." />
-        </UFormField>
-
-        <UFormField label="Estado" name="activo">
-          <UCheckbox v-model="state.activo" label="Activa" />
-        </UFormField>
-
-        <div class="flex gap-3">
-          <UButton type="submit" label="Guardar" color="primary" :loading="loading" />
-          <UButton label="Cancelar" color="neutral" variant="subtle" @click="goBack" />
+      <div class="p-6">
+        <div class="mb-6">
+          <h2 class="text-2xl font-semibold">Nueva Categoria</h2>
+          <p class="text-sm text-muted mt-1">Complete los datos de la categoria</p>
         </div>
-      </UForm>
+
+        <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
+          <UFormField label="Nombre" name="nombre" size="xl" class="w-full">
+            <UInput v-model="state.nombre" placeholder="Ej: Pantallas, Baterias..." size="xl" class="w-full" />
+          </UFormField>
+
+          <UFormField label="Descripcion" name="descripcion" size="xl" class="w-full">
+            <UTextarea v-model="state.descripcion" placeholder="Descripcion de la categoria..." size="xl" class="w-full" />
+          </UFormField>
+
+          <UFormField label="Estado" name="activo" size="xl" class="w-full">
+            <UCheckbox v-model="state.activo" label="Activa" />
+          </UFormField>
+
+          <div class="flex justify-end gap-3 pt-4">
+            <UButton type="submit" label="Guardar Categoria" color="primary" :loading="loading" icon="i-lucide-save" />
+            <UButton label="Cancelar" color="neutral" variant="outline" @click="goBack" />
+          </div>
+        </UForm>
+      </div>
     </template>
   </UDashboardPanel>
 </template>

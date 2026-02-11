@@ -61,12 +61,13 @@ export interface Range {
 
 export interface Cliente {
   id: string
+  userId: string
+  usuario: string
+  email: string
   tipoDocumento: string
   numeroDocumento: string
   razonSocial: string
   direccion: string
-  telefono: string
-  email: string
   createdAt: string
   updatedAt: string
 }

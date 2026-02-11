@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Src\Cliente\Infrastructure\Models\ClienteEloquentModel;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class UserEloquentModel extends Authenticatable
 {
@@ -51,9 +51,9 @@ class UserEloquentModel extends Authenticatable
         ];
     }
 
-    public function clientes(): HasMany
+    public function cliente(): HasOne
     {
-        return $this->hasMany(ClienteEloquentModel::class);
+        return $this->hasOne(ClienteEloquentModel::class, 'user_id', 'id');
     }
 
 }
