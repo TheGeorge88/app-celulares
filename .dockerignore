@@ -1,0 +1,17 @@
+node_modules
+vendor
+.env
+.env.backup
+.env.production
+storage/*.key
+.git
+.idea
+.vscode
+.nova
+.fleet
+.zed
+.claude
+*.log
+.DS_Store
+Thumbs.db
+nul
