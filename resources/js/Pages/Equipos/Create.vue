@@ -72,7 +72,7 @@ const goBack = () => router.visit(route('equipos.index'))
 
         <form @submit.prevent="handleSubmit" class="space-y-6 max-w-2xl">
           <FormField label="Cliente" name="clienteId" required :error="errors.cliente_id">
-            <USelectMenu v-model="state.clienteId" :items="clienteOptions" placeholder="Seleccione un cliente" size="xl" class="w-full" />
+            <USelectMenu v-model="state.clienteId" :items="clienteOptions" value-key="value" placeholder="Seleccione un cliente" size="xl" class="w-full" />
           </FormField>
 
           <div class="grid grid-cols-2 gap-8">

@@ -98,11 +98,11 @@ const goBack = () => router.visit(route('ordenes-reparacion.show', props.orden.d
         <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
           <div class="grid grid-cols-2 gap-8">
             <UFormField label="Estado" name="estado" size="xl" class="w-full">
-              <USelectMenu v-model="state.estado" :items="estados" size="xl" class="w-full" />
+              <USelectMenu v-model="state.estado" :items="estados" value-key="value" size="xl" class="w-full" />
             </UFormField>
 
             <UFormField label="Tecnico asignado" name="tecnicoId" size="xl" class="w-full">
-              <USelectMenu v-model="state.tecnicoId" :items="tecnicoOptions" size="xl" class="w-full" />
+              <USelectMenu v-model="state.tecnicoId" :items="tecnicoOptions" value-key="value" size="xl" class="w-full" />
             </UFormField>
           </div>
 

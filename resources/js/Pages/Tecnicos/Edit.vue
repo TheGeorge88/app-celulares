@@ -93,6 +93,7 @@ const handleCancel = () => {
             <USelectMenu
               v-model="state.userId"
               :items="usuarioOptions"
+              value-key="value"
               placeholder="Seleccione un usuario..."
               size="xl"
               class="w-full"

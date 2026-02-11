@@ -104,13 +104,14 @@ const goBack = () => router.visit(route('ordenes-reparacion.index'))
 
         <UForm :schema="schema" :state="state" class="space-y-6 max-w-2xl" @submit="onSubmit">
           <UFormField label="Cliente" name="clienteId" size="xl" class="w-full">
-            <USelectMenu v-model="state.clienteId" :items="clienteOptions" placeholder="Seleccione un cliente" searchable size="xl" class="w-full" />
+            <USelectMenu v-model="state.clienteId" :items="clienteOptions" value-key="value" placeholder="Seleccione un cliente" searchable size="xl" class="w-full" />
           </UFormField>
 
           <UFormField label="Equipo" name="equipoId" size="xl" class="w-full">
             <USelectMenu
               v-model="state.equipoId"
               :items="equipoOptions"
+              value-key="value"
               placeholder="Seleccione un equipo del cliente"
               :disabled="!state.clienteId"
               size="xl"
@@ -119,7 +120,7 @@ const goBack = () => router.visit(route('ordenes-reparacion.index'))
           </UFormField>
 
           <UFormField label="Tecnico asignado (opcional)" name="tecnicoId" size="xl" class="w-full">
-            <USelectMenu v-model="state.tecnicoId" :items="tecnicoOptions" placeholder="Asignar tecnico" size="xl" class="w-full" />
+            <USelectMenu v-model="state.tecnicoId" :items="tecnicoOptions" value-key="value" placeholder="Asignar tecnico" size="xl" class="w-full" />
           </UFormField>
 
           <UFormField label="Problema reportado" name="problemaReportado" size="xl" class="w-full">
