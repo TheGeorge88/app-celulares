@@ -53,34 +53,17 @@ const tipoItems = [
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   loading.value = true
-  try {
-    const payload = {
-      ...event.data,
-      categoria_id: event.data.categoriaId,
-      precio_unitario: event.data.precioUnitario
-    }
 
-    const response = await fetch(route('api.productos.store'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '')
-      },
-      credentials: 'include',
-      body: JSON.stringify(payload)
-    })
-
-    if (response.ok) {
+  router.post(route('productos.store'), event.data, {
+    onSuccess: () => {
       toast.add({ title: 'Producto creado correctamente', color: 'success' })
-      router.visit(route('productos.index'))
-    } else {
-      const error = await response.json()
-      toast.add({ title: 'Error', description: error.message, color: 'error' })
-    }
-  } finally {
-    loading.value = false
-  }
+    },
+    onError: (errors) => {
+      const firstError = Object.values(errors)[0]
+      toast.add({ title: 'Error', description: firstError as string, color: 'error' })
+    },
+    onFinish: () => { loading.value = false }
+  })
 }
 
 const goBack = () => router.visit(route('productos.index'))

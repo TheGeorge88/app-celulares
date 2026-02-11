@@ -69,29 +69,17 @@ watch(() => state.value.clienteId, async (clienteId) => {
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   loading.value = true
-  try {
-    const response = await fetch(route('api.ordenes-reparacion.store'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '')
-      },
-      credentials: 'include',
-      body: JSON.stringify(event.data)
-    })
 
-    if (response.ok) {
-      const orden = await response.json()
-      toast.add({ title: 'Orden creada', description: `Codigo: ${orden.data?.codigoSeguimiento || orden.codigoSeguimiento}`, color: 'success' })
-      router.visit(route('ordenes-reparacion.index'))
-    } else {
-      const error = await response.json()
-      toast.add({ title: 'Error', description: error.message, color: 'error' })
-    }
-  } finally {
-    loading.value = false
-  }
+  router.post(route('ordenes-reparacion.store'), event.data, {
+    onSuccess: () => {
+      toast.add({ title: 'Orden creada correctamente', color: 'success' })
+    },
+    onError: (errors) => {
+      const firstError = Object.values(errors)[0]
+      toast.add({ title: 'Error', description: firstError as string, color: 'error' })
+    },
+    onFinish: () => { loading.value = false }
+  })
 }
 
 const goBack = () => router.visit(route('ordenes-reparacion.index'))
